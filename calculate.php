@@ -3,6 +3,7 @@ use Paysera\Services\FileManager;
 use AppConfig\Config;
 use Paysera\Services\CsvValidator;
 use Paysera\Services\Transaction\TransactionFactory;
+use Paysera\Services\User\UserFactory;
 
 require __DIR__ . '/vendor/autoload.php';
 
@@ -28,11 +29,13 @@ function init($fileName)
 
     $allTransactions = [];
     $transactionFactory = new TransactionFactory();
+    $userFactory = new UserFactory();
 
     foreach ($fileData as $row) {
         $allTransactions[] = $transactionFactory->buildFromData($row);
     }
-    dump($allTransactions);
+    $users = $userFactory->buildFromTransactions($allTransactions);
+    dump($users);
 
 }
 
