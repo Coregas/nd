@@ -7,15 +7,20 @@ class User {
      */
     private $id;
     /**
+     * @var string
+     */
+    private $userType;
+    /**
      * @var array
      */
     private $transactions;
 
     function __construct(
         $id,
-        $transactions
+        $userType
     ) {
         $this->id = $id;
+        $this->userType = $userType;
     }
 
     /**
@@ -29,12 +34,20 @@ class User {
     /**
      * @return array
      */
-    public function getUserTransactions()
+    public function getUserTransactions() : array
     {
         return $this->transactions;
     }
 
-    public function setUserTransactions(array $transactions):array
+    /**
+     * @return string
+     */
+    public function getUserType() : string
+    {
+        return $this->userType;
+    }
+
+    public function setUserTransactions(array $transactions)
     {
         $this->transactions = $transactions;
     }
