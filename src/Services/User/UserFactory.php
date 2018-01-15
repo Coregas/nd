@@ -25,7 +25,7 @@ class UserFactory
         foreach ($uniqueUsers as $key => $uniqueUser) {
             $userTransactions = $this->findTransactionsByUserId($uniqueUser['id'], $transactions);
             $users[$key] = $this->buildFromData($uniqueUser);
-            $users[$key]->setUserTransactions($userTransactions);
+            $users[$key]->setTransactions($userTransactions);
         }
 
         return $users;
