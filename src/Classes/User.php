@@ -34,7 +34,7 @@ class User {
     /**
      * @return array
      */
-    public function getUserTransactions() : array
+    public function getTransactions() : array
     {
         return $this->transactions;
     }
@@ -47,7 +47,7 @@ class User {
         return $this->userType;
     }
 
-    public function setUserTransactions(array $transactions)
+    public function setTransactions(array $transactions)
     {
         $this->transactions = $transactions;
     }
