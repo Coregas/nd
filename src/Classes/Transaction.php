@@ -54,7 +54,7 @@ class Transaction {
     /**
      * @return string
      */
-    public function getTransactionType() : string
+    public function getType() : string
     {
         return $this->transactionType;
     }
