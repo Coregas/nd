@@ -9,6 +9,7 @@ class Transaction {
     private $transactionType;
     private $amount;
     private $currency;
+    private $commissionFee;
 
     public function __construct(
         $date,
@@ -72,5 +73,21 @@ class Transaction {
     public function getCurrency() : string
     {
         return $this->currency;
+    }
+
+    /**
+     * @param $commisionFee
+     */
+    public function setCommissionFee($commisionFee)
+    {
+        $this->commissionFee = $commisionFee;
+    }
+
+    /**
+     * @return float
+     */
+    public function getCommissionFee():float
+    {
+        return $this->commissionFee;
     }
 }
