@@ -1,5 +1,6 @@
 <?php
 namespace Paysera\Services\Commission;
+
 use AppConfig\Config;
 use Paysera\Classes\Transaction;
 use Paysera\Classes\User;
@@ -7,11 +8,13 @@ use Paysera\Classes\User;
 class Commission
 {
     private $cashInConfig;
+    private $cashOutConfig;
 
     public function __construct(
         Config $config
     ){
         $this->cashInConfig = $config->getCashInConfig();
+        $this->cashOutConfig = $config->getCashOutConfig();
     }
 
     /**
@@ -41,9 +44,14 @@ class Commission
         }
     }
 
+    /**
+     * @param User $user
+     */
     private function cashOutLegalUser($user)
     {
-
+        foreach ($user->getTransactions() as $transaction) {
+            $transaction->setCommissionFee($this->cashOutLegalCommisions($transaction));
+        }
     }
 
     private function cashOutNaturalUser($user)
@@ -51,6 +59,18 @@ class Commission
 
     }
 
+    /**
+     * @param Transaction $transaction
+     * @return float|mixed
+     */
+    private function cashOutLegalCommisions($transaction)
+    {
+        $commissionFee = round($transaction->getAmount() / 100 * $this->cashOutConfig['legal']['commission_fee_percent'], 2, PHP_ROUND_HALF_UP);
+        $minCommissionFee = $this->getMInCashOutLegalFee($transaction->getCurrency());
+        $commissionFee = $commissionFee < $minCommissionFee ? $minCommissionFee : $commissionFee;
+
+        return $commissionFee;
+    }
     /**
      * @param $currency
      * @return mixed
@@ -70,6 +90,33 @@ class Commission
                     break;
                 default:
                     throw new \Exception('Unhandled cash_in currency ' . $currency);
+                    break;
+            }
+        } catch (\Exception $e) {
+            fwrite(STDOUT, $e->getMessage());
+            die();
+        }
+    }
+
+    /**
+     * @param $currency
+     * @return mixed
+     */
+    private function getMInCashOutLegalFee($currency)
+    {
+        try {
+            switch ($currency) {
+                case 'EUR':
+                    return $this->cashOutConfig['legal']['fee_min_EUR'];
+                    break;
+                case 'USD':
+                    return $this->cashOutConfig['legal']['fee_min_USD'];
+                    break;
+                case 'JPY':
+                    return $this->cashOutConfig['legal']['fee_min_JPY'];
+                    break;
+                default:
+                    throw new \Exception('Unhandled cash_out legal user currency ' . $currency);
                     break;
             }
         } catch (\Exception $e) {
