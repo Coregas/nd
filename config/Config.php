@@ -32,9 +32,22 @@ class Config {
         return array(
             'commission_fee_percent' => 0.03,
             'fee_max_EUR' => 5.00,
-            'fee_max_USD' => round(5*$this->eurUsdRate, 2, PHP_ROUND_HALF_UP),
-            'fee_max_JPY' => round(5*$this->eurJpyRate, 2, PHP_ROUND_HALF_UP),
+            'fee_max_USD' => round(5 * $this->eurUsdRate, 2, PHP_ROUND_HALF_UP),
+            'fee_max_JPY' => round(5 * $this->eurJpyRate, 2, PHP_ROUND_HALF_UP),
             'currency_types' => $this->availableCurrencies
+        );
+    }
+
+    public function getCashOutConfig()
+    {
+        return array(
+            'legal' => [
+                'commission_fee_percent' => 0.3,
+                'fee_min_EUR' => 0.50,
+                'fee_min_USD' => round(0.50 * $this->eurUsdRate, 2, PHP_ROUND_HALF_UP),
+                'fee_min_JPY' => round(0.50 * $this->eurJpyRate, 2, PHP_ROUND_HALF_UP),
+                'currency_types' => $this->availableCurrencies
+            ]
         );
     }
 }
