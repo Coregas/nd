@@ -5,6 +5,9 @@ use Paysera\Classes\Transaction;
 
 class CashIn
 {
+    /**
+     * @var array
+     */
     private $config;
 
     public function __construct(
