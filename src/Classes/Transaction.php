@@ -31,6 +31,13 @@ class Transaction
     }
 
     /**
+     * @return int
+     */
+    public function getId() : int
+    {
+        return $this->id;
+    }
+    /**
      * @return DateTime
      */
     public function getDate() : DateTime

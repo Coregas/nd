@@ -18,7 +18,7 @@ class CashIn
 
     public function commissionFee(Transaction $trans)
     {
-        $commissionFee = round($trans->getAmount() / 100 * $this->config['commission_fee_percent'], 2, PHP_ROUND_HALF_UP);
+        $commissionFee = $trans->getAmount() / 100 * $this->config['commission_fee_percent'];
         $maxCommissionFee = $this->getMaxFee($trans->getCurrency());
         $commissionFee = $commissionFee > $maxCommissionFee ? $maxCommissionFee : $commissionFee;
 

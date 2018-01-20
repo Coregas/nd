@@ -4,8 +4,8 @@ namespace Paysera\Services\Commission;
 use AppConfig\Config;
 use Paysera\Classes\Transaction;
 use Paysera\Classes\User;
-use Paysera\Classes\CashOutTaxReductionTracker;
 use Paysera\Services\Transaction\CashIn;
+use Paysera\Services\Transaction\CashOut;
 
 class Commission
 {
@@ -13,229 +13,63 @@ class Commission
     private $cashOutConfig;
     private $config;
     /**
-     * @var CashOutTaxReductionTracker
-     */
-    private $transWeekTracker;
-    /**
      * @var CashIn
      */
     private $cashInService;
+    /**
+     * @var CashOut
+     */
+    private $cashOutService;
 
     public function __construct(
         Config $config,
-        CashIn $cashInService
+        CashIn $cashInService,
+        CashOut $cashOutService
     ){
         $this->cashInConfig = $config->getCashInConfig();
         $this->cashOutConfig = $config->getCashOutConfig();
         $this->config = $config;
         $this->cashInService = $cashInService;
-    }
-
-    /**
-     * @param $transaction
-     * @return float
-     */
-    public function cashInCommissions($transaction)
-    {
-        return $this->cashInService->commissionFee($transaction);
+        $this->cashOutService = $cashOutService;
     }
 
     /**
      * @param User $user
+     * @return array
      */
-    public function cashOutCommissions($user)
+    public function processUserTransactions($user)
     {
-        if ($user->getUserType() == 'legal') {
-           $this->cashOutLegalUser($user);
+        $cashIns = $user->getTransactionsByType('cash_in');
+        if (!empty($cashIns)) {
+            $cashIns = $this->cashInsCommissions($cashIns);
         }
 
-        if ($user->getUserType() == 'natural') {
-            $this->cashOutNaturalUser($user);
-        }
-    }
-
-    /**
-     * @param User $user
-     */
-    private function cashOutNaturalUser($user)
-    {
-        $transactions = $user->getTransactions();
-
-        if (count($transactions) > 1) {
-            $this->processNaturalUserCashOutTransactions($transactions);
-        } else {
-            $this->processSingleNaturalUserCashOutTransaction($transactions);
-        }
-    }
-
-
-    private function processNaturalUserCashOutTransactions($transactions)
-    {
-        foreach ($transactions as $firstTrans) {
-            if (is_null($firstTrans->getCommissionFee())) {
-                $this->transWeekTracker = new CashOutTaxReductionTracker($this->config, $firstTrans->getYear(), $firstTrans->getWeek());
-                foreach ($transactions as $secondTrans) {
-                    if ($this->areTransactionsOnSameWeek($firstTrans, $secondTrans)) {
-                        if (is_null($secondTrans->getCommissionFee())) {
-                            $this->naturalCashOutTransactionTaxReduction($secondTrans);
-                        }
-                    }
-                }
-            }
-        }
-    }
-    /**
-     * @param Transaction $transaction
-     * @return mixed
-     */
-    private function naturalCashOutTransactionTaxReduction($transaction)
-    {
-
-        if ($this->transWeekTracker->getUntaxedTransCount() > 0 &&
-            $this->transWeekTracker->isLeftUntaxedAmount($transaction->getCurrency())) {
-            $reducedAmount = $this->reduceCashOutTransCommission($transaction);
-            if($reducedAmount == 0) {
-                $transaction->setCommissionFee(0);
-            } else {
-                $transaction->setCommissionFee($this->cashOutNaturalCommissions($reducedAmount));
-            }
-        } else {
-            $transaction->setCommissionFee($this->cashOutNaturalCommissions($transaction->getAmount()));
+        $cashOuts = $user->getTransactionsByType('cash_out');
+        if (!empty($cashOuts)) {
+            $cashOuts = $this->cashOutsCommissions($cashOuts, $user->getUserType());
         }
 
-    }
-
-    /**
-     * @param Transaction $trans
-     * @return int
-     */
-    private function reduceCashOutTransCommission($trans)
-    {
-        if ($this->transWeekTracker->isUntaxedAmountGreaterThenTransAmount($trans)) {
-            $this->transWeekTracker->subtractTransFromUntaxedAmount($trans);
-            return 0;
-        } else {
-            $leftTransAmount = $trans - $this->transWeekTracker->getUntaxedAmountByCurrency($trans->getCurrency());
-            $this->transWeekTracker->zeroUntaxedAmounts();
-            return $leftTransAmount;
-        }
-    }
-
-    /**
-     * @param $transAmount
-     * @return float|int
-     */
-    private function cashOutNaturalCommissions($transAmount)
-    {
-        $commissionFee = $transAmount / 100 * $this->cashOutConfig['natural']['commission_fee_percent'];
-
-        return $commissionFee;
-    }
-
-    /**
-     * @param Transaction $firstTrans
-     * @param Transaction $secondTrans
-     * @return bool
-     */
-    private function areTransactionsOnSameWeek($firstTrans, $secondTrans)
-    {
-        if ($firstTrans->getDate()->format('W') == $secondTrans->getDate()->format('W')){
-            if ($firstTrans->getDate()->format('o') == $secondTrans->getDate()->format('o')) {
-                return true;
-            }
-        }
-        return false;
+        return array_merge($cashIns, $cashOuts);
     }
     /**
      * @param Transaction[] $transactions
-     * @return float|mixed
+     * @return array
      */
-    private function processSingleNaturalUserCashOutTransaction($transactions)
+    public function cashInsCommissions($transactions)
     {
-        $commissionFee = round($transactions[0]->getAmount() / 100 * $this->cashOutConfig['natural']['commission_fee_percent'], 2, PHP_ROUND_HALF_UP);
-        $maxTaxFreeCashOut = $this->getMaxCashOutNaturalFreeFee($transactions[0]->getCurrency());
-
-        if ($commissionFee > $maxTaxFreeCashOut) {
-            $transactions[0]->setCommissionFee($commissionFee - $maxTaxFreeCashOut);
-        } else {
-            $transactions[0]->setCommissionFee(0);
+        foreach ($transactions as $transaction) {
+            $transaction->setCommissionFee($this->cashInService->commissionFee($transaction));
         }
+        return $transactions;
     }
 
     /**
-     * @param User $user
-     */
-    private function cashOutLegalUser($user)
-    {
-        foreach ($user->getTransactions() as $transaction) {
-            $transaction->setCommissionFee($this->cashOutLegalCommissions($transaction));
-        }
-    }
-
-    /**
-     * @param Transaction $transaction
-     * @return float|mixed
-     */
-    private function cashOutLegalCommissions($transaction)
-    {
-        $commissionFee = round($transaction->getAmount() / 100 * $this->cashOutConfig['legal']['commission_fee_percent'], 2, PHP_ROUND_HALF_UP);
-        $minCommissionFee = $this->getMinCashOutLegalFee($transaction->getCurrency());
-        $commissionFee = $commissionFee < $minCommissionFee ? $minCommissionFee : $commissionFee;
-
-        return $commissionFee;
-    }
-
-    /**
-     * @param $currency
+     * @param array $cashOuts
+     * @param string $userType
      * @return mixed
      */
-    private function getMinCashOutLegalFee($currency)
+    public function cashOutsCommissions($cashOuts, $userType)
     {
-        try {
-            switch ($currency) {
-                case 'EUR':
-                    return $this->cashOutConfig['legal']['fee_min_EUR'];
-                    break;
-                case 'USD':
-                    return $this->cashOutConfig['legal']['fee_min_USD'];
-                    break;
-                case 'JPY':
-                    return $this->cashOutConfig['legal']['fee_min_JPY'];
-                    break;
-                default:
-                    throw new \Exception('Unhandled cash_out legal user currency ' . $currency);
-                    break;
-            }
-        } catch (\Exception $e) {
-            fwrite(STDOUT, $e->getMessage());
-            die();
-        }
-    }
-
-    /**
-     * @param $currency
-     * @return mixed
-     */
-    private function getMaxCashOutNaturalFreeFee($currency)
-    {
-        try {
-            switch ($currency) {
-                case 'EUR':
-                    return $this->cashOutConfig['natural']['week_max_untaxed_amount']['EUR'];
-                    break;
-                case 'USD':
-                    return $this->cashOutConfig['natural']['week_max_untaxed_amount']['USD'];
-                    break;
-                case 'JPY':
-                    return $this->cashOutConfig['natural']['week_max_untaxed_amount']['JPY'];
-                    break;
-                default:
-                    throw new \Exception('Unhandled cash_out legal user currency ' . $currency);
-                    break;
-            }
-        } catch (\Exception $e) {
-            fwrite(STDOUT, $e->getMessage());
-            die();
-        }
+        return $this->cashOutService->cashOutsCommissions($cashOuts, $userType);
     }
 }
