@@ -20,7 +20,6 @@ class UserFactory
      */
     public function buildFromTransactions(array $transactions) {
         $uniqueUsers = $this->findUniqueUserIds($transactions);
-        dump($uniqueUsers);
         $users = [];
 
         foreach ($uniqueUsers as $key => $uniqueUser) {
