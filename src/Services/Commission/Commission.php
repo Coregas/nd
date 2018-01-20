@@ -4,18 +4,24 @@ namespace Paysera\Services\Commission;
 use AppConfig\Config;
 use Paysera\Classes\Transaction;
 use Paysera\Classes\User;
+use Paysera\Classes\CashOutTaxReductionTracker;
 
 class Commission
 {
     private $cashInConfig;
     private $cashOutConfig;
-    private $transWeekTracker = [];
+    private $config;
+    /**
+     * @var CashOutTaxReductionTracker
+     */
+    private $transWeekTracker;
 
     public function __construct(
         Config $config
     ){
         $this->cashInConfig = $config->getCashInConfig();
         $this->cashOutConfig = $config->getCashOutConfig();
+        $this->config = $config;
     }
 
     /**
@@ -62,13 +68,14 @@ class Commission
 
     private function processNaturalUserCashOutTransactions($transactions)
     {
-
         foreach ($transactions as $firstTrans) {
-            $this->setTransWeekTracker($firstTrans);
-            foreach ($transactions as $secondTrans) {
-                if ($this->areTransactionsOnSameWeek($firstTrans, $secondTrans)) {
-                    if (is_null($secondTrans->getCommissionFee())) {
-                        $this->naturalCashOutTransactionTaxReduction( $secondTrans);
+            if (is_null($firstTrans->getCommissionFee())) {
+                $this->transWeekTracker = new CashOutTaxReductionTracker($this->config, $firstTrans->getYear(), $firstTrans->getWeek());
+                foreach ($transactions as $secondTrans) {
+                    if ($this->areTransactionsOnSameWeek($firstTrans, $secondTrans)) {
+                        if (is_null($secondTrans->getCommissionFee())) {
+                            $this->naturalCashOutTransactionTaxReduction($secondTrans);
+                        }
                     }
                 }
             }
@@ -78,11 +85,11 @@ class Commission
      * @param Transaction $transaction
      * @return mixed
      */
-    private function naturalCashOutTransactionTaxReduction( $transaction)
+    private function naturalCashOutTransactionTaxReduction($transaction)
     {
 
-        if ($this->transWeekTracker[$transaction->getYear()][$transaction->getWeek()]['untaxable_transaction_count'] > 0 &&
-            $this->availableTransactionTaxReduction($transaction)) {
+        if ($this->transWeekTracker->getUntaxedTransCount() > 0 &&
+            $this->transWeekTracker->isLeftUntaxedAmount($transaction->getCurrency())) {
             $reducedAmount = $this->reduceCashOutTransCommission($transaction);
             if($reducedAmount == 0) {
                 $transaction->setCommissionFee(0);
@@ -101,16 +108,13 @@ class Commission
      */
     private function reduceCashOutTransCommission($trans)
     {
-        $availableReduction = $this->transWeekTracker[$trans->getYear()][$trans->getWeek()]['untaxed_amount'][$trans->getCurrency()];
-
-        if ($availableReduction >= $trans->getAmount()) {
-            $this->transWeekTracker[$trans->getYear()][$trans->getWeek()][$trans->getCurrency()] = $availableReduction - $trans->getAmount();
-            $this->transWeekTracker[$trans->getYear()][$trans->getWeek()]['untaxable_transaction_count']--;
-            $this->updateAvailableTaxReductionAmount($trans);
+        if ($this->transWeekTracker->isUntaxedAmountGreaterThenTransAmount($trans)) {
+            $this->transWeekTracker->subtractTransFromUntaxedAmount($trans);
             return 0;
         } else {
-        $this->zeroAvailableTaxReductionAmount($trans);
-        return $trans->getAmount() - $availableReduction;
+            $leftTransAmount = $trans - $this->transWeekTracker->getUntaxedAmountByCurrency($trans->getCurrency());
+            $this->transWeekTracker->zeroUntaxedAmounts();
+            return $leftTransAmount;
         }
     }
 
@@ -123,91 +127,6 @@ class Commission
         $commissionFee = $transAmount / 100 * $this->cashOutConfig['natural']['commission_fee_percent'];
 
         return $commissionFee;
-    }
-
-    /**
-     * @param Transaction $trans
-     */
-    private function updateAvailableTaxReductionAmount($trans)
-    {
-        switch ($trans->getCurrency()) {
-            case 'EUR':
-                $this->updateAvailableTaxReductionAmountFromEur($trans);
-                break;
-            case 'USD':
-                $this->updateAvailableTaxReductionAmountFromUsd($trans);
-                break;
-            case 'JPY':
-                $this->updateAvailableTaxReductionAmountFromJpy($trans);
-                break;
-        }
-    }
-
-    /**
-     * @param Transaction $trans
-     */
-    private function updateAvailableTaxReductionAmountFromEur($trans)
-    {
-        $leftAmount = $this->transWeekTracker[$trans->getYear()][$trans->getWeek()]['untaxed_amount']['EUR'] - $trans->getAmount();
-        $this->transWeekTracker[$trans->getYear()][$trans->getWeek()]['untaxed_amount']['EUR'] = $leftAmount;
-        $this->transWeekTracker[$trans->getYear()][$trans->getWeek()]['untaxed_amount']['USD'] = $leftAmount / $this->cashOutConfig['EUR_USD_rate'];
-        $this->transWeekTracker[$trans->getYear()][$trans->getWeek()]['untaxed_amount']['JPY'] = $leftAmount / $this->cashOutConfig['EUR_JPY_rate'];
-    }
-    /**
-     * @param Transaction $trans
-     */
-    private function updateAvailableTaxReductionAmountFromUsd($trans)
-    {
-        $leftAmount = $this->transWeekTracker[$trans->getYear()][$trans->getWeek()]['week_max_untaxed_amount']['USD'] - $trans->getAmount();
-        $this->transWeekTracker[$trans->getYear()][$trans->getWeek()]['untaxed_amount']['USD'] = $leftAmount;
-        $this->transWeekTracker[$trans->getYear()][$trans->getWeek()]['untaxed_amount']['EUR'] = $leftAmount * $this->cashOutConfig['EUR_USD_rate'];
-        $this->transWeekTracker[$trans->getYear()][$trans->getWeek()]['untaxed_amount']['JPY'] = $leftAmount * $this->cashOutConfig['EUR_USD_rate'] / $this->cashOutConfig['EUR_JPY_rate'];
-    }
-    /**
-     * @param Transaction $trans
-     */
-    private function updateAvailableTaxReductionAmountFromJpy($trans)
-    {
-        $leftAmount = $this->transWeekTracker[$trans->getYear()][$trans->getWeek()]['untaxed_amount']['JPY'] - $trans->getAmount();
-        $this->transWeekTracker[$trans->getYear()][$trans->getWeek()]['untaxed_amount']['JPY'] = $leftAmount;
-        $this->transWeekTracker[$trans->getYear()][$trans->getWeek()]['untaxed_amount']['EUR'] = $leftAmount * $this->cashOutConfig['EUR_JPY_rate'];
-        $this->transWeekTracker[$trans->getYear()][$trans->getWeek()]['untaxed_amount']['USD'] = $leftAmount * $this->cashOutConfig['EUR_JPY_rate'] / $this->cashOutConfig['EUR_USD_rate'];
-    }
-    /**
-     * @param $trans
-     */
-    private function zeroAvailableTaxReductionAmount($trans)
-    {
-        foreach ($this->transWeekTracker[$trans->getYear()][$trans->getWeek()]['untaxed_amount'] as &$amount) {
-            $amount = 0;
-        }
-
-    }
-    /**
-     * @param Transaction $trans
-     * @return bool
-     */
-    private function availableTransactionTaxReduction($trans)
-    {
-        if ($this->transWeekTracker[$trans->getYear()][$trans->getWeek()]['untaxed_amount'][$trans->getCurrency()] > 0) {
-            return true;
-        } else {
-            return false;
-        }
-
-    }
-
-    /**
-     * @param Transaction $transaction
-     */
-    private function setTransWeekTracker($transaction)
-    {
-        if (!isset($this->transWeekTracker[$transaction->getYear()][$transaction->getWeek()])) {
-            $this->transWeekTracker[$transaction->getYear()][$transaction->getWeek()]['untaxable_transaction_count'] = $this->cashOutConfig['natural']['untaxed_transaction_count'];
-            foreach ($this->cashOutConfig['currency_types'] as $currency) {
-                $this->transWeekTracker[$transaction->getYear()][$transaction->getWeek()]['untaxed_amount'][$currency] = $this->cashOutConfig['natural']['week_max_untaxed_amount'][$currency];
-            }
-        }
     }
 
     /**
