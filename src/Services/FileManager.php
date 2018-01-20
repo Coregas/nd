@@ -67,6 +67,7 @@ class FileManager
        $sortedData = [];
        foreach ($data as $key => $row) {
            $sortedData[$key] = $this->validateCsvRowData($row);
+           $sortedData[$key]['id'] = $key;
        }
 
        return $sortedData;
