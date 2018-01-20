@@ -9,6 +9,7 @@ class TransactionFactory
     public function buildFromData($data)
     {
         return new Transaction(
+            intval($data['id']),
           new DateTime($data['date']),
           intval($data['user_id']),
           $data['user_type'],
