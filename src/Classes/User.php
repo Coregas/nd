@@ -40,6 +40,21 @@ class User {
     }
 
     /**
+     * @param string $type
+     * @return array
+     */
+    public function getTransactionsByType(string $type) : array
+    {
+       $sortedTransactions = [];
+
+       foreach ($this->getTransactions() as $transaction) {
+           if ($transaction->getType() == $type) {
+               $sortedTransactions[] =  $transaction;
+           }
+       }
+       return $sortedTransactions;
+    }
+    /**
      * @return string
      */
     public function getUserType() : string
@@ -47,6 +62,9 @@ class User {
         return $this->userType;
     }
 
+    /**
+     * @param array $transactions
+     */
     public function setTransactions(array $transactions)
     {
         $this->transactions = $transactions;
