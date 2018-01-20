@@ -1,8 +1,9 @@
 <?php
 namespace Paysera\Classes;
 use DateTime;
-class Transaction {
-
+class Transaction
+{
+    private $id;
     private $date;
     private $userId;
     private $userType;
@@ -12,6 +13,7 @@ class Transaction {
     private $commissionFee;
 
     public function __construct(
+        $id,
         $date,
         $userId,
         $userType,
@@ -19,6 +21,7 @@ class Transaction {
         $amount,
         $currency
     ) {
+        $this->id = $id;
         $this->date = $date;
         $this->userId = $userId;
         $this->userType = $userType;
