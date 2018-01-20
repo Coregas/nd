@@ -5,6 +5,7 @@ use AppConfig\Config;
 use Paysera\Classes\Transaction;
 use Paysera\Classes\User;
 use Paysera\Classes\CashOutTaxReductionTracker;
+use Paysera\Services\Transaction\CashIn;
 
 class Commission
 {
@@ -15,13 +16,19 @@ class Commission
      * @var CashOutTaxReductionTracker
      */
     private $transWeekTracker;
+    /**
+     * @var CashIn
+     */
+    private $cashInService;
 
     public function __construct(
-        Config $config
+        Config $config,
+        CashIn $cashInService
     ){
         $this->cashInConfig = $config->getCashInConfig();
         $this->cashOutConfig = $config->getCashOutConfig();
         $this->config = $config;
+        $this->cashInService = $cashInService;
     }
 
     /**
@@ -30,11 +37,7 @@ class Commission
      */
     public function cashInCommissions($transaction)
     {
-        $commissionFee = round($transaction->getAmount() / 100 * $this->cashInConfig['commission_fee_percent'], 2, PHP_ROUND_HALF_UP);
-        $maxCommissionFee = $this->getMaxCashInFee($transaction->getCurrency());
-        $commissionFee = $commissionFee > $maxCommissionFee ? $maxCommissionFee : $commissionFee;
-
-        return $commissionFee;
+        return $this->cashInService->commissionFee($transaction);
     }
 
     /**
@@ -180,32 +183,6 @@ class Commission
         $commissionFee = $commissionFee < $minCommissionFee ? $minCommissionFee : $commissionFee;
 
         return $commissionFee;
-    }
-    /**
-     * @param $currency
-     * @return mixed
-     */
-    private function getMaxCashInFee($currency)
-    {
-        try {
-            switch ($currency) {
-                case 'EUR':
-                    return $this->cashInConfig['fee_max_EUR'];
-                    break;
-                case 'USD':
-                    return $this->cashInConfig['fee_max_USD'];
-                    break;
-                case 'JPY':
-                    return $this->cashInConfig['fee_max_JPY'];
-                    break;
-                default:
-                    throw new \Exception('Unhandled cash_in currency ' . $currency);
-                    break;
-            }
-        } catch (\Exception $e) {
-            fwrite(STDOUT, $e->getMessage());
-            die();
-        }
     }
 
     /**
