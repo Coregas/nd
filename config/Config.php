@@ -3,8 +3,8 @@ namespace AppConfig;
 
 class Config {
 
-    private $eurUsdRate = 1.1497;
-    private $eurJpyRate = 129.53;
+    private $eurUsdRate = 1 / 1.1497;
+    private $eurJpyRate = 1 / 129.53;
     private $availableCurrencies = ['EUR', 'USD', 'JPY'];
     /**
      * @return array
@@ -32,8 +32,8 @@ class Config {
         return array(
             'commission_fee_percent' => 0.03,
             'fee_max_EUR' => 5.00,
-            'fee_max_USD' => round(5 * $this->eurUsdRate, 2, PHP_ROUND_HALF_UP),
-            'fee_max_JPY' => round(5 * $this->eurJpyRate, 2, PHP_ROUND_HALF_UP),
+            'fee_max_USD' => 5 / $this->eurUsdRate,
+            'fee_max_JPY' => 5 / $this->eurJpyRate,
             'currency_types' => $this->availableCurrencies
         );
     }
@@ -41,12 +41,23 @@ class Config {
     public function getCashOutConfig()
     {
         return array(
+            'currency_types' => $this->availableCurrencies,
+            'EUR_USD_rate' => $this->eurUsdRate,
+            'EUR_JPY_rate' => $this->eurJpyRate,
             'legal' => [
                 'commission_fee_percent' => 0.3,
                 'fee_min_EUR' => 0.50,
-                'fee_min_USD' => round(0.50 * $this->eurUsdRate, 2, PHP_ROUND_HALF_UP),
-                'fee_min_JPY' => round(0.50 * $this->eurJpyRate, 2, PHP_ROUND_HALF_UP),
-                'currency_types' => $this->availableCurrencies
+                'fee_min_USD' => 0.50 / $this->eurUsdRate,
+                'fee_min_JPY' => 0.50 / $this->eurJpyRate,
+            ],
+            'natural' => [
+                'commission_fee_percent' => 0.3,
+                'week_max_untaxed_amount' =>[
+                    'EUR' => 1000.00,
+                    'USD' => 1000.00 / $this->eurUsdRate,
+                    'JPY' => 1000.00 / $this->eurJpyRate,
+                ],
+                'untaxed_transaction_count' => 3
             ]
         );
     }

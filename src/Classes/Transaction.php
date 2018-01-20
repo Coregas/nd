@@ -34,6 +34,21 @@ class Transaction {
     {
         return $this->date;
     }
+    /**
+     * @return int
+     */
+    public function getYear() : int
+    {
+        return $this->date->format('o');;
+    }
+
+    /**
+     * @return int
+     */
+    public function getWeek(): int
+    {
+        return $this->date->format('W');
+    }
 
     /**
      * @return int
@@ -84,9 +99,9 @@ class Transaction {
     }
 
     /**
-     * @return float
+     * @return mixed
      */
-    public function getCommissionFee():float
+    public function getCommissionFee()
     {
         return $this->commissionFee;
     }
