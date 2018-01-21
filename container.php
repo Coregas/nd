@@ -8,7 +8,6 @@ $container->register('config', \AppConfig\Config::class);
 
 $container->register('commission_service', \Paysera\Services\Commission\Commission::class)
     ->setArguments([
-        new Reference('config'),
         new Reference('cash_in_service'),
         new Reference('cash_out_service'),
     ]);
