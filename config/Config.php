@@ -19,9 +19,10 @@ class Config {
                 'user_id_format_example' => '1337',
                 'user_types' => ['natural', 'legal'],
                 'transaction_types' => ['cash_in', 'cash_out'],
-                'amount_format' => '/^-?(?:\d+|\d*\.\d+)$/',
-                'amount_format_examples' => ['123','13.37'],
+                'amount_format' => '/^(?:[1-9]\d*|0)?(?:\.\d+)?$/',
+                'amount_format_examples' => 'positive floats',
                 'currency_format' => '/[A-Z]{3}$/',
+                'available_currency_types' => implode(', ', $this->availableCurrencies),
                 'currency_types' => $this->availableCurrencies,
                 'csv_file_headers' => ['date', 'user_id', 'user_type', 'operation', 'amount', 'currency']
         );

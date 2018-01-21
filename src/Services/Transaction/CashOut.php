@@ -30,7 +30,8 @@ class CashOut
     /**
      * @param $cashOuts
      * @param $userType
-     * @return mixed
+     * @return mixed|null
+     * @throws \Exception
      */
     public function cashOutsCommissions($cashOuts, $userType)
     {
@@ -42,12 +43,13 @@ class CashOut
            return $this->cashOutNaturalUser($cashOuts);
         }
 
-        return null;
+        throw new \Exception('Bad user Type given');
     }
 
     /**
      * @param $cashOuts
      * @return mixed
+     * @throws \Exception
      */
     private function cashOutNaturalUser($cashOuts)
     {
@@ -84,7 +86,6 @@ class CashOut
      */
     private function naturalCashOutTransactionTaxReduction($transaction)
     {
-
         if ($this->transWeekTracker->getUntaxedTransCount() > 0 &&
             $this->transWeekTracker->isLeftUntaxedAmount($transaction->getCurrency())) {
             $reducedAmount = $this->reduceCashOutTransCommission($transaction);
@@ -137,9 +138,11 @@ class CashOut
         }
         return false;
     }
+
     /**
      * @param Transaction[] $transactions
      * @return mixed
+     * @throws \Exception
      */
     private function processSingleNaturalUserCashOutTransaction($transactions)
     {
@@ -158,8 +161,9 @@ class CashOut
     }
 
     /**
-     * @param Transaction[] $cashOuts
+     * @param $cashOuts
      * @return mixed
+     * @throws \Exception
      */
     private function cashOutLegalUser($cashOuts)
     {
@@ -171,8 +175,9 @@ class CashOut
 
 
     /**
-     * @param Transaction $transaction
-     * @return float|mixed
+     * @param $transaction
+     * @return float
+     * @throws \Exception
      */
     private function cashOutLegalCommissions($transaction)
     {
@@ -182,56 +187,50 @@ class CashOut
 
         return round($commissionFee, 2, PHP_ROUND_HALF_UP);
     }
+
     /**
      * @param $currency
      * @return mixed
+     * @throws \Exception
      */
     private function getMaxCashOutNaturalFreeFee($currency)
     {
-        try {
-            switch ($currency) {
-                case 'EUR':
-                    return $this->config['natural']['week_max_untaxed_amount']['EUR'];
-                    break;
-                case 'USD':
-                    return $this->config['natural']['week_max_untaxed_amount']['USD'];
-                    break;
-                case 'JPY':
-                    return $this->config['natural']['week_max_untaxed_amount']['JPY'];
-                    break;
-                default:
-                    throw new \Exception('Unhandled cash_out legal user currency ' . $currency);
-                    break;
-            }
-        } catch (\Exception $e) {
-            fwrite(STDOUT, $e->getMessage());
-            die();
+        switch ($currency) {
+            case 'EUR':
+                return $this->config['natural']['week_max_untaxed_amount']['EUR'];
+                break;
+            case 'USD':
+                return $this->config['natural']['week_max_untaxed_amount']['USD'];
+                break;
+            case 'JPY':
+                return $this->config['natural']['week_max_untaxed_amount']['JPY'];
+                break;
+            default:
+                throw new \Exception('Unhandled cash_out legal user currency ' . $currency);
+                break;
         }
     }
+
     /**
      * @param $currency
      * @return mixed
+     * @throws \Exception
      */
     private function getMinCashOutLegalFee($currency)
     {
-        try {
-            switch ($currency) {
-                case 'EUR':
-                    return $this->config['legal']['fee_min_EUR'];
-                    break;
-                case 'USD':
-                    return $this->config['legal']['fee_min_USD'];
-                    break;
-                case 'JPY':
-                    return $this->config['legal']['fee_min_JPY'];
-                    break;
-                default:
-                    throw new \Exception('Unhandled cash_out legal user currency ' . $currency);
-                    break;
-            }
-        } catch (\Exception $e) {
-            fwrite(STDOUT, $e->getMessage());
-            die();
+        switch ($currency) {
+            case 'EUR':
+                return $this->config['legal']['fee_min_EUR'];
+                break;
+            case 'USD':
+                return $this->config['legal']['fee_min_USD'];
+                break;
+            case 'JPY':
+                return $this->config['legal']['fee_min_JPY'];
+                break;
+            default:
+                throw new \Exception('Unhandled cash_out legal user currency ' . $currency);
+                break;
         }
     }
 }

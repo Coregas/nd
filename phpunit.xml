@@ -1,7 +1,12 @@
-<phpunit bootstrap="vendor/autoload.php">
+<phpunit colors="true" bootstrap="vendor/autoload.php">
     <testsuites>
-        <testsuite name="paysera">
-            <file>src/Tests/Transaction/CashInTest.php</file>
+        <testsuite name="All Tests">
+                <directory>src/Tests</directory>
         </testsuite>
     </testsuites>
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">src/Services</directory>
+        </whitelist>
+    </filter>
 </phpunit>

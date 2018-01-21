@@ -157,7 +157,7 @@ class CsvValidator
             }
         } catch (\Exception $e) {
             fwrite(STDOUT, $e->getMessage());
-            die();
+           // die();
         }
     }
 
@@ -176,7 +176,7 @@ class CsvValidator
                         'badly formatted currency, given:' .
                         $currency .
                         ' available currency_format set in csv config:' .
-                        $this->csvConfig['currency_types'] .
+                        $this->csvConfig['available_currency_types'] .
                         PHP_EOL
                     );
                 }

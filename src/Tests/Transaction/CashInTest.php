@@ -17,15 +17,28 @@ class CashInTest extends TestCase
     /**
      * @var Transaction
      */
-    private $transaction;
+    private $transactionEur;
+    /**
+     * @var Transaction
+     */
+    private $transactionUsd;
+    /**
+     * @var Transaction
+     */
+    private $transactionJpy;
+
+    /**
+     * @var Transaction
+     */
+    private $transactionFalseCurrency;
 
     public function setUp()
     {
-       $this->config = new Config();
+       $this->config = $this->getMockBuilder(Config::class)->disableOriginalConstructor()->getMock();
 
        $this->service = new CashIn($this->config);
 
-       $this->transaction = new Transaction(
+       $this->transactionEur = new Transaction(
            1,
            '2018-01-01',
            1,
@@ -34,11 +47,60 @@ class CashInTest extends TestCase
            1000,
            'EUR'
        );
+
+        $this->transactionUsd = new Transaction(
+            1,
+            '2018-01-01',
+            1,
+            'natural',
+            'cash_in',
+            1,
+            'USD'
+        );
+
+        $this->transactionJpy = new Transaction(
+            1,
+            '2018-01-01',
+            1,
+            'natural',
+            'cash_in',
+            30000000,
+            'JPY'
+        );
+
+        $this->transactionFalseCurrency = new Transaction(
+            1,
+            '2018-01-01',
+            1,
+            'natural',
+            'cash_in',
+            30000000,
+            'LOL'
+        );
+
     }
 
-    public function testCommissionFee()
+    public function testCommissionFeeEur()
     {
-        $this->service->commissionFee($this->transaction);
+       $this->assertInternalType('float', $this->service->commissionFee($this->transactionEur));
+    }
+
+    public function testCommissionFeeUsd()
+    {
+        $this->assertInternalType('float', $this->service->commissionFee($this->transactionUsd));
+    }
+
+    public function testCommissionFeeJpy()
+    {
+        $this->assertInternalType('float', $this->service->commissionFee($this->transactionJpy));
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testCommissionFeeFalseCurrency()
+    {
+       $this->service->commissionFee($this->transactionFalseCurrency);
     }
 
 }

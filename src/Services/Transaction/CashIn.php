@@ -28,27 +28,23 @@ class CashIn
     /**
      * @param $currency
      * @return mixed
+     * @throws \Exception
      */
     private function getMaxFee($currency)
     {
-        try {
-            switch ($currency) {
-                case 'EUR':
-                    return $this->config['fee_max_EUR'];
-                    break;
-                case 'USD':
-                    return $this->config['fee_max_USD'];
-                    break;
-                case 'JPY':
-                    return $this->config['fee_max_JPY'];
-                    break;
-                default:
-                    throw new \Exception('Unhandled cash_in currency, given:' . $currency);
-                    break;
-            }
-        } catch (\Exception $e) {
-            fwrite(STDOUT, $e->getMessage());
-            die();
+        switch ($currency) {
+            case 'EUR':
+                return $this->config['fee_max_EUR'];
+                break;
+            case 'USD':
+                return $this->config['fee_max_USD'];
+                break;
+            case 'JPY':
+                return $this->config['fee_max_JPY'];
+                break;
+            default:
+                throw new \Exception('Unhandled cash_out legal user currency ' . $currency);
+                break;
         }
     }
 }
