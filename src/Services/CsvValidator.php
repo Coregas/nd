@@ -1,6 +1,6 @@
 <?php
 namespace Paysera\Services;
-use AppConfig\Config;
+use Paysera\Classes\Config;
 
 class CsvValidator
 {

@@ -2,7 +2,7 @@
 namespace Paysera\Tests\Transaction;
 
 use PHPUnit\Framework\TestCase;
-use AppConfig\Config;
+use Paysera\Classes\Config;
 use Paysera\Services\CsvValidator;
 
 class CsvValidatorTest extends TestCase

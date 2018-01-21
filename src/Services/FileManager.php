@@ -2,9 +2,7 @@
 namespace Paysera\Services;
 
 use League\Csv\Reader;
-use League\Csv\Statement;
-use AppConfig\Config;
-use Paysera\Services\CsvValidator;
+use Paysera\Classes\Config;
 
 class FileManager
 {

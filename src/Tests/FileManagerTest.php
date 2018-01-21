@@ -3,7 +3,7 @@ namespace Paysera\Tests\Transaction;
 
 use Paysera\Services\FileManager;
 use PHPUnit\Framework\TestCase;
-use AppConfig\Config;
+use Paysera\Classes\Config;
 use Paysera\Services\CsvValidator;
 
 class FileManagerTest extends TestCase

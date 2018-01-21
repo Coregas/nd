@@ -1,7 +1,7 @@
 <?php
 namespace Paysera\Tests\Transaction;
 
-use AppConfig\Config;
+use Paysera\Classes\Config;
 use Paysera\Classes\Transaction;
 use Paysera\Classes\User;
 use Paysera\Services\Transaction\CashOut;

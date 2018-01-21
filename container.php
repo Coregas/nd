@@ -4,7 +4,7 @@ use Symfony\Component\DependencyInjection\Reference;
 
 $container = new ContainerBuilder();
 
-$container->register('config', \AppConfig\Config::class);
+$container->register('config', \Paysera\Classes\Config::class);
 
 $container->register('commission_service', \Paysera\Services\Commission\Commission::class)
     ->setArguments([

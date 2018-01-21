@@ -1,6 +1,6 @@
 <?php
 namespace Paysera\Classes;
-use AppConfig\Config;
+use Paysera\Classes\Config;
 
 class CashOutTaxReductionTracker
 {

@@ -1,6 +1,6 @@
 <?php
 namespace Paysera\Services\Transaction;
-use AppConfig\Config;
+use Paysera\Classes\Config;
 use Paysera\Classes\Transaction;
 
 class CashIn

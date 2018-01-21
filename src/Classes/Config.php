@@ -1,5 +1,5 @@
 <?php
-namespace AppConfig;
+namespace Paysera\Classes;
 
 class Config {
 

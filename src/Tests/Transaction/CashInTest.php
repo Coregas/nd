@@ -1,7 +1,7 @@
 <?php
 namespace Paysera\Tests\Transaction;
 
-use AppConfig\Config;
+use Paysera\Classes\Config;
 use Paysera\Classes\Transaction;
 use \PHPUnit\Framework\TestCase;
 use Paysera\Services\Transaction\CashIn;
