@@ -121,7 +121,7 @@ class CashOut
     {
         $commissionFee = $transAmount / 100 * $this->config['natural']['commission_fee_percent'];
 
-        return $commissionFee;
+        return round($commissionFee, 2, PHP_ROUND_HALF_UP);;
     }
     /**
      * @param Transaction $firstTrans
@@ -147,7 +147,9 @@ class CashOut
         $maxTaxFreeCashOut = $this->getMaxCashOutNaturalFreeFee($transactions[0]->getCurrency());
 
         if ($commissionFee > $maxTaxFreeCashOut) {
-            $transactions[0]->setCommissionFee($commissionFee - $maxTaxFreeCashOut);
+            $commissionFee -= $maxTaxFreeCashOut;
+            $commissionFee = round($commissionFee, 2, PHP_ROUND_HALF_UP);
+            $transactions[0]->setCommissionFee($commissionFee);
         } else {
             $transactions[0]->setCommissionFee(0);
         }
@@ -178,7 +180,7 @@ class CashOut
         $minCommissionFee = $this->getMinCashOutLegalFee($transaction->getCurrency());
         $commissionFee = $commissionFee < $minCommissionFee ? $minCommissionFee : $commissionFee;
 
-        return $commissionFee;
+        return round($commissionFee, 2, PHP_ROUND_HALF_UP);
     }
     /**
      * @param $currency

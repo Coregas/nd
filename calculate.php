@@ -31,11 +31,12 @@ function init($fileName)
     $cashOutService = new CashOut($config);
     $csvValidator = new CsvValidator($config);
     $fileManager = new FileManager($config, $csvValidator);
-    $fileData = $fileManager->readFile($fileName);
-    $allTransactions = [];
     $transactionFactory = new TransactionFactory();
     $userFactory = new UserFactory();
     $commissionService = new Commission($config, $cashInService, $cashOutService);
+
+    $fileData = $fileManager->readFile($fileName);
+    $allTransactions = [];
 
 
     foreach ($fileData as $row) {
@@ -47,12 +48,6 @@ function init($fileName)
         $user->setTransactions($commissionService->processUserTransactions($user));
     }
     getCommissionData($users);
-}
-
-function printData($commissionData) {
-    foreach ($commissionData as $fee) {
-        fwrite(STDOUT, round($fee, 2, PHP_ROUND_HALF_UP) . PHP_EOL);
-    }
 }
 /**
  * @param User[] $users
@@ -69,8 +64,14 @@ function getCommissionData($users) {
         $commissionData[$transaction->getId()] = $transaction->getCommissionFee();
     }
     ksort($commissionData);
+
     printData($commissionData);
-    dump($commissionData);
+}
+
+function printData($commissionData) {
+    foreach ($commissionData as $fee) {
+        fwrite(STDOUT, number_format((float)$fee, 2, '.', '') . PHP_EOL);
+    }
 }
 
 ?>

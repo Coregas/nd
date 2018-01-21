@@ -22,7 +22,7 @@ class CashIn
         $maxCommissionFee = $this->getMaxFee($trans->getCurrency());
         $commissionFee = $commissionFee > $maxCommissionFee ? $maxCommissionFee : $commissionFee;
 
-        return $commissionFee;
+        return round($commissionFee, 2, PHP_ROUND_HALF_UP);
     }
 
     /**
