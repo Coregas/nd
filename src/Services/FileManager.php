@@ -28,29 +28,24 @@ class FileManager
     /**
      * @param string $fileName
      * @return mixed
+     * @throws \Exception
      */
     public function readFile(string $fileName)
-   {
-       $fileExtension = pathinfo($fileName, PATHINFO_EXTENSION);
-
-       try {
-            switch ($fileExtension){
-                case 'csv':
-                    return $this->readCSVFile($fileName);
-                    break;
-                default:
-                    throw new \Exception('unsupported file type');
-            }
-
-       } catch (\Exception $e) {
-           fwrite(STDOUT, $e->getMessage());
-           die();
-       }
-   }
+    {
+        $fileExtension = pathinfo($fileName, PATHINFO_EXTENSION);
+        switch ($fileExtension) {
+            case 'csv':
+                return $this->readCSVFile($fileName);
+                break;
+            default:
+                throw new \Exception('unsupported file type');
+        }
+    }
 
     /**
      * @param string $fileName
-     * @return mixed
+     * @return array
+     * @throws \Exception
      */
    private function readCSVFile(string $fileName)
    {
@@ -76,6 +71,7 @@ class FileManager
     /**
      * @param array $rowData
      * @return array
+     * @throws \Exception
      */
    private function validateCsvRowData(array $rowData)
    {
