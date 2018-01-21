@@ -1,12 +1,4 @@
 <?php
-use Paysera\Services\FileManager;
-use AppConfig\Config;
-use Paysera\Services\CsvValidator;
-use Paysera\Services\Transaction\TransactionFactory;
-use Paysera\Services\User\UserFactory;
-use Paysera\Services\Commission\Commission;
-use Paysera\Services\Transaction\CashIn;
-use Paysera\Services\Transaction\CashOut;
 use Paysera\Classes\User;
 
 require __DIR__ . '/vendor/autoload.php';
