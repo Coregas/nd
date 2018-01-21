@@ -1,0 +1,7 @@
+<phpunit bootstrap="vendor/autoload.php">
+    <testsuites>
+        <testsuite name="paysera">
+            <file>src/Tests/Transaction/CashInTest.php</file>
+        </testsuite>
+    </testsuites>
+</phpunit>
