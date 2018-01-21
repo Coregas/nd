@@ -49,7 +49,7 @@ class User {
 
        foreach ($this->getTransactions() as $transaction) {
            if ($transaction->getType() == $type) {
-               $sortedTransactions[] =  $transaction;
+               $sortedTransactions[] = $transaction;
            }
        }
        return $sortedTransactions;
