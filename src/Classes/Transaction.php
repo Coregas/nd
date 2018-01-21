@@ -1,15 +1,40 @@
 <?php
 namespace Paysera\Classes;
 use DateTime;
+
 class Transaction
 {
+    /**
+     * @var int
+     */
     private $id;
+    /**
+     * @var DateTime
+     */
     private $date;
+    /**
+     * @var int
+     */
     private $userId;
+    /**
+     * @var string
+     */
     private $userType;
+    /**
+     * @var string
+     */
     private $transactionType;
+    /**
+     * @var float
+     */
     private $amount;
+    /**
+     * @var string
+     */
     private $currency;
+    /**
+     * @var float
+     */
     private $commissionFee;
 
     public function __construct(
@@ -49,7 +74,7 @@ class Transaction
      */
     public function getYear() : int
     {
-        return $this->date->format('o');;
+        return $this->date->format('o');
     }
 
     /**
