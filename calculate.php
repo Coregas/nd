@@ -10,10 +10,11 @@ use Paysera\Services\Transaction\CashOut;
 use Paysera\Classes\User;
 
 require __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '/container.php';
 
     try {
         if (isset($argv[1])) {
-            init($argv[1]);
+            init($argv[1], $container);
         } else {
             throw new Exception('No file specified');
         }
@@ -22,18 +23,15 @@ require __DIR__ . '/vendor/autoload.php';
     }
 
 /**
- * @param string $fileName
+ * @param $fileName
+ * @param $container
  */
-function init($fileName)
+function init($fileName, $container)
 {
-    $config = new Config();
-    $cashInService = new CashIn($config);
-    $cashOutService = new CashOut($config);
-    $csvValidator = new CsvValidator($config);
-    $fileManager = new FileManager($config, $csvValidator);
-    $transactionFactory = new TransactionFactory();
-    $userFactory = new UserFactory();
-    $commissionService = new Commission($config, $cashInService, $cashOutService);
+    $fileManager = $container->get('file_manager_service');
+    $transactionFactory = $container->get('transaction_factory_service');
+    $userFactory = $container->get('user_factory_service');
+    $commissionService = $container->get('commission_service');
 
     $fileData = $fileManager->readFile($fileName);
     $allTransactions = [];
