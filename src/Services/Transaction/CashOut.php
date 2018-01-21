@@ -21,8 +21,8 @@ class CashOut
     private $transWeekTracker;
 
     public function __construct(
-       Config $config
-    ){
+        Config $config
+    ) {
         $this->config = $config->getCashOutConfig();
         $this->fullConfig = $config;
     }
@@ -40,7 +40,7 @@ class CashOut
         }
 
         if ($userType == 'natural') {
-           return $this->cashOutNaturalUser($cashOuts);
+            return $this->cashOutNaturalUser($cashOuts);
         }
 
         throw new \Exception('Bad user Type given');
@@ -68,11 +68,15 @@ class CashOut
     {
         foreach ($transactions as $firstTrans) {
             if (is_null($firstTrans->getCommissionFee())) {
-                $this->transWeekTracker = new CashOutTaxReductionTracker($this->fullConfig, $firstTrans->getYear(), $firstTrans->getWeek());
+                $this->transWeekTracker = new CashOutTaxReductionTracker(
+                    $this->fullConfig,
+                    $firstTrans->getYear(),
+                    $firstTrans->getWeek()
+                );
                 foreach ($transactions as $secondTrans) {
                     if ($this->areTransactionsOnSameWeek($firstTrans, $secondTrans)) {
                         if (is_null($secondTrans->getCommissionFee())) {
-                           $this->naturalCashOutTransactionTaxReduction($secondTrans);
+                            $this->naturalCashOutTransactionTaxReduction($secondTrans);
                         }
                     }
                 }
@@ -89,7 +93,7 @@ class CashOut
         if ($this->transWeekTracker->getUntaxedTransCount() > 0 &&
             $this->transWeekTracker->isLeftUntaxedAmount($transaction->getCurrency())) {
             $reducedAmount = $this->reduceCashOutTransCommission($transaction);
-            if($reducedAmount == 0) {
+            if ($reducedAmount == 0) {
                 $transaction->setCommissionFee(0);
             } else {
                 $transaction->setCommissionFee($this->cashOutNaturalCommissions($reducedAmount));
@@ -97,7 +101,6 @@ class CashOut
         } else {
             $transaction->setCommissionFee($this->cashOutNaturalCommissions($transaction->getAmount()));
         }
-
     }
     /**
      * @param Transaction $trans
@@ -109,7 +112,9 @@ class CashOut
             $this->transWeekTracker->subtractTransFromUntaxedAmount($trans);
             return 0;
         } else {
-            $leftTransAmount = $trans->getAmount() - $this->transWeekTracker->getUntaxedAmountByCurrency($trans->getCurrency());
+            $leftTransAmount = $trans->getAmount() - $this->transWeekTracker->getUntaxedAmountByCurrency(
+                $trans->getCurrency()
+            );
             $this->transWeekTracker->zeroUntaxedAmounts();
             return $leftTransAmount;
         }
@@ -131,7 +136,7 @@ class CashOut
      */
     private function areTransactionsOnSameWeek($firstTrans, $secondTrans)
     {
-        if ($firstTrans->getDate()->format('W') == $secondTrans->getDate()->format('W')){
+        if ($firstTrans->getDate()->format('W') == $secondTrans->getDate()->format('W')) {
             if ($firstTrans->getDate()->format('o') == $secondTrans->getDate()->format('o')) {
                 return true;
             }

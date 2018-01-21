@@ -1,7 +1,8 @@
 <?php
 namespace Paysera\Classes;
 
-class User {
+class User
+{
     /**
      * @var int
      */
@@ -15,7 +16,7 @@ class User {
      */
     private $transactions;
 
-    function __construct(
+    public function __construct(
         $id,
         $userType
     ) {
@@ -45,14 +46,14 @@ class User {
      */
     public function getTransactionsByType(string $type) : array
     {
-       $sortedTransactions = [];
+        $sortedTransactions = [];
 
-       foreach ($this->getTransactions() as $transaction) {
-           if ($transaction->getType() == $type) {
-               $sortedTransactions[] = $transaction;
-           }
-       }
-       return $sortedTransactions;
+        foreach ($this->getTransactions() as $transaction) {
+            if ($transaction->getType() == $type) {
+                $sortedTransactions[] = $transaction;
+            }
+        }
+        return $sortedTransactions;
     }
     /**
      * @return string

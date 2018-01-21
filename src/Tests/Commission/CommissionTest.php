@@ -37,13 +37,13 @@ class CommissionTest extends TestCase
             $this->cashOutServiceMock
         );
         $this->cashInTrans = new Transaction(
-          1,
-          new DateTime('2018-01-01'),
-          1,
-          'natural',
-          'cash_in',
-          1000,
-          'EUR'
+            1,
+            new DateTime('2018-01-01'),
+            1,
+            'natural',
+            'cash_in',
+            1000,
+            'EUR'
         );
 
         $this->cashOutTrans = new Transaction(
@@ -73,8 +73,5 @@ class CommissionTest extends TestCase
             ->willReturn([$this->cashOutTrans]);
 
         $this->assertInternalType('array', $this->service->processUserTransactions($user));
-
     }
-
-
 }

@@ -10,12 +10,12 @@ class TransactionFactory
     {
         return new Transaction(
             intval($data['id']),
-          new DateTime($data['date']),
-          intval($data['user_id']),
-          $data['user_type'],
-          $data['transaction_type'],
-          floatval($data['amount']),
-          $data['currency']
+            new DateTime($data['date']),
+            intval($data['user_id']),
+            $data['user_type'],
+            $data['transaction_type'],
+            floatval($data['amount']),
+            $data['currency']
         );
     }
 }

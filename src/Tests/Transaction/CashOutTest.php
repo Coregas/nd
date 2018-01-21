@@ -55,19 +55,19 @@ class CashOutTest extends TestCase
 
     public function setUp()
     {
-       $this->config = new Config();
+        $this->config = new Config();
 
-       $this->service = new CashOut($this->config);
+        $this->service = new CashOut($this->config);
 
-       $this->naturalTransactionEur = new Transaction(
-           1,
-           new DateTime('2018-01-01'),
-           1,
-           'natural',
-           'cash_out',
-           999.99,
-           'EUR'
-       );
+        $this->naturalTransactionEur = new Transaction(
+            1,
+            new DateTime('2018-01-01'),
+            1,
+            'natural',
+            'cash_out',
+            999.99,
+            'EUR'
+        );
 
         $this->naturalTransactionUsd = new Transaction(
             1,
@@ -138,60 +138,71 @@ class CashOutTest extends TestCase
             $this->legalTransactionEur,
             $this->legalTransactionUsd
         ]);
-
     }
 
     public function testLegalUser()
     {
-        $this->assertInternalType('array', $this->service->cashOutsCommissions([
-            $this->legalTransactionJpy,
-            $this->legalTransactionEur,
-            $this->legalTransactionUsd
-        ],
-            $this->legalUser->getUserType()));
+        $this->assertInternalType(
+            'array',
+            $this->service->cashOutsCommissions(
+                [$this->legalTransactionJpy,$this->legalTransactionEur,$this->legalTransactionUsd],
+                $this->legalUser->getUserType()
+            )
+        );
     }
 
     public function testNaturalUser()
     {
-        $this->assertInternalType('array', $this->service->cashOutsCommissions([
-            $this->naturalTransactionJpy,
-            $this->naturalTransactionEur,
-            $this->naturalTransactionUsd
-        ],
-            $this->naturalUser->getUserType()));
+        $this->assertInternalType(
+            'array',
+            $this->service->cashOutsCommissions(
+                [$this->naturalTransactionJpy, $this->naturalTransactionEur, $this->naturalTransactionUsd],
+                $this->naturalUser->getUserType()
+            )
+        );
     }
     public function testNaturalUser2()
     {
-        $this->assertInternalType('array', $this->service->cashOutsCommissions([
-            $this->naturalTransactionJpy,
-            $this->naturalTransactionUsd,
-            $this->naturalTransactionEur
-        ],
-            $this->naturalUser->getUserType()));
+        $this->assertInternalType(
+            'array',
+            $this->service->cashOutsCommissions(
+                [$this->naturalTransactionJpy, $this->naturalTransactionUsd, $this->naturalTransactionEur],
+                $this->naturalUser->getUserType()
+            )
+        );
     }
 
     public function testSingleNaturalTransactionEur()
     {
-        $this->assertInternalType('array', $this->service->cashOutsCommissions([
-            $this->naturalTransactionEur
-        ],
-            $this->naturalUser->getUserType()));
+        $this->assertInternalType(
+            'array',
+            $this->service->cashOutsCommissions(
+                [$this->naturalTransactionEur],
+                $this->naturalUser->getUserType()
+            )
+        );
     }
 
     public function testSingleNaturalTransactionUsd()
     {
-        $this->assertInternalType('array', $this->service->cashOutsCommissions([
-            $this->naturalTransactionUsd
-        ],
-            $this->naturalUser->getUserType()));
+        $this->assertInternalType(
+            'array',
+            $this->service->cashOutsCommissions(
+                [$this->naturalTransactionUsd],
+                $this->naturalUser->getUserType()
+            )
+        );
     }
 
     public function testSingleNaturalTransactionJpy()
     {
-        $this->assertInternalType('array', $this->service->cashOutsCommissions([
-            $this->naturalTransactionJpy
-        ],
-            $this->naturalUser->getUserType()));
+        $this->assertInternalType(
+            'array',
+            $this->service->cashOutsCommissions(
+                [$this->naturalTransactionJpy],
+                $this->naturalUser->getUserType()
+            )
+        );
     }
 
     /**
@@ -199,31 +210,29 @@ class CashOutTest extends TestCase
      */
     public function testUndefinedUserType()
     {
-        $this->service->cashOutsCommissions([
-            $this->naturalTransactionJpy
-        ],
-            'aaaaa');
+        $this->service->cashOutsCommissions(
+            [$this->naturalTransactionJpy],
+            'aaaaa'
+        );
     }
     /**
      * @expectedException \Exception
      */
     public function testUndefinedCurrencyNatural()
     {
-        $this->service->cashOutsCommissions([
-            $this->transactionFalseCurrency
-        ],
-            'natural');
+        $this->service->cashOutsCommissions(
+            [$this->transactionFalseCurrency],
+            'natural'
+        );
     }
     /**
      * @expectedException \Exception
      */
     public function testUndefinedCurrencyLegal()
     {
-        $this->service->cashOutsCommissions([
-            $this->transactionFalseCurrency
-        ],
-            'legal');
+        $this->service->cashOutsCommissions(
+            [$this->transactionFalseCurrency],
+            'legal'
+        );
     }
-
-
 }

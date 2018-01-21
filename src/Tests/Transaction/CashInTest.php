@@ -34,19 +34,19 @@ class CashInTest extends TestCase
 
     public function setUp()
     {
-       $this->config = $this->getMockBuilder(Config::class)->disableOriginalConstructor()->getMock();
+        $this->config = $this->getMockBuilder(Config::class)->disableOriginalConstructor()->getMock();
 
-       $this->service = new CashIn($this->config);
+        $this->service = new CashIn($this->config);
 
-       $this->transactionEur = new Transaction(
-           1,
-           '2018-01-01',
-           1,
-           'natural',
-           'cash_in',
-           1000,
-           'EUR'
-       );
+        $this->transactionEur = new Transaction(
+            1,
+            '2018-01-01',
+            1,
+            'natural',
+            'cash_in',
+            1000,
+            'EUR'
+        );
 
         $this->transactionUsd = new Transaction(
             1,
@@ -77,12 +77,11 @@ class CashInTest extends TestCase
             30000000,
             'LOL'
         );
-
     }
 
     public function testCommissionFeeEur()
     {
-       $this->assertInternalType('float', $this->service->commissionFee($this->transactionEur));
+        $this->assertInternalType('float', $this->service->commissionFee($this->transactionEur));
     }
 
     public function testCommissionFeeUsd()
@@ -100,7 +99,6 @@ class CashInTest extends TestCase
      */
     public function testCommissionFeeFalseCurrency()
     {
-       $this->service->commissionFee($this->transactionFalseCurrency);
+        $this->service->commissionFee($this->transactionFalseCurrency);
     }
-
 }

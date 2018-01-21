@@ -1,5 +1,6 @@
 <?php
 namespace Paysera\Services\Transaction;
+
 use Paysera\Classes\Config;
 use Paysera\Classes\Transaction;
 
@@ -11,7 +12,7 @@ class CashIn
     private $config;
 
     public function __construct(
-       Config $config
+        Config $config
     ) {
         $this->config = $config->getCashInConfig();
     }

@@ -29,8 +29,8 @@ class TransactionFactoryTest extends TestCase
             100,
             'EUR'
         );
-
     }
+
     public function testBuildFromData()
     {
         $this->assertEquals($this->transaction, $this->service->buildFromData([

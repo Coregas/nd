@@ -9,8 +9,8 @@ class UserFactory
     public function buildFromData($data)
     {
         return new User(
-          $data['id'],
-          $data['type']
+            $data['id'],
+            $data['type']
         );
     }
 
@@ -18,7 +18,8 @@ class UserFactory
      * @param Transaction[] $transactions
      * @return array
      */
-    public function buildFromTransactions(array $transactions) {
+    public function buildFromTransactions(array $transactions)
+    {
         $uniqueUsers = $this->findUniqueUserIds($transactions);
         $users = [];
 
@@ -29,7 +30,6 @@ class UserFactory
         }
 
         return $users;
-
     }
 
     /**
@@ -41,8 +41,7 @@ class UserFactory
     {
         $userTransactions = [];
 
-        foreach ($transactions as $transaction)
-        {
+        foreach ($transactions as $transaction) {
             if ($transaction->getUserId() == $userId) {
                 $userTransactions[] = $transaction;
             }
@@ -59,7 +58,7 @@ class UserFactory
         $uniqueUsers = [];
 
         foreach ($transactions as $key => $transaction) {
-            if(!in_array($transaction->getUserId(), array_column($uniqueUsers, 'id'))) {
+            if (!in_array($transaction->getUserId(), array_column($uniqueUsers, 'id'))) {
                 $uniqueUsers[$key]['id'] = $transaction->getUserId();
                 $uniqueUsers[$key]['type'] = $transaction->getUserType();
             }

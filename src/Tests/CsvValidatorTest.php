@@ -35,7 +35,7 @@ class CsvValidatorTest extends TestCase
     {
         $row = [];
 
-        for($i = 1; $i <= $this->config->getCsvConfig()['column_count']; $i++) {
+        for ($i = 1; $i <= $this->config->getCsvConfig()['column_count']; $i++) {
             $row[] = 1;
         }
         $this->assertEquals(true, $this->service->validateColumnCount($row));
@@ -45,7 +45,7 @@ class CsvValidatorTest extends TestCase
      */
     public function testValidateDate()
     {
-      $this->service->validateDate('xxxx');
+        $this->service->validateDate('xxxx');
     }
 
     public function testValidateDate2()
@@ -75,7 +75,8 @@ class CsvValidatorTest extends TestCase
     {
         $this->assertEquals(
             $this->config->getCsvConfig()['user_types'][0],
-            $this->service->validateUserType($this->config->getCsvConfig()['user_types'][0]));
+            $this->service->validateUserType($this->config->getCsvConfig()['user_types'][0])
+        );
     }
 
     /**
@@ -90,7 +91,8 @@ class CsvValidatorTest extends TestCase
     {
         $this->assertEquals(
             $this->config->getCsvConfig()['transaction_types'][0],
-            $this->service->validateTransactionType($this->config->getCsvConfig()['transaction_types'][0]));
+            $this->service->validateTransactionType($this->config->getCsvConfig()['transaction_types'][0])
+        );
     }
 
     /**
@@ -126,7 +128,7 @@ class CsvValidatorTest extends TestCase
     {
         $this->assertEquals(
             $this->config->getCsvConfig()['currency_types'][0],
-            $this->service->validateCurrency( $this->config->getCsvConfig()['currency_types'][0]));
+            $this->service->validateCurrency($this->config->getCsvConfig()['currency_types'][0])
+        );
     }
 }
-

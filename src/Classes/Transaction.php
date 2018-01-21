@@ -1,5 +1,6 @@
 <?php
 namespace Paysera\Classes;
+
 use DateTime;
 
 class Transaction

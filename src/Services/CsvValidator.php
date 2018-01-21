@@ -1,5 +1,6 @@
 <?php
 namespace Paysera\Services;
+
 use Paysera\Classes\Config;
 
 class CsvValidator
@@ -10,8 +11,8 @@ class CsvValidator
     private $csvConfig;
 
     public function __construct(
-      Config $config
-    ){
+        Config $config
+    ) {
         $this->csvConfig = $config->getCsvConfig();
     }
 
@@ -144,28 +145,27 @@ class CsvValidator
      */
     public function validateCurrency(string $currency) : string
     {
-            if (strlen($currency) == $this->csvConfig['currency_format_length'] &&
-                preg_match($this->csvConfig['currency_format'], $currency)) {
-
-                if (in_array($currency, $this->csvConfig['currency_types'])) {
-                    return $currency;
-                } else {
-                    throw new \Exception(
-                        'badly formatted currency, given:' .
-                        $currency .
-                        ' available currency_format set in csv config:' .
-                        $this->csvConfig['available_currency_types'] .
-                        PHP_EOL
-                    );
-                }
+        if (strlen($currency) == $this->csvConfig['currency_format_length'] &&
+            preg_match($this->csvConfig['currency_format'], $currency)) {
+            if (in_array($currency, $this->csvConfig['currency_types'])) {
+                return $currency;
             } else {
                 throw new \Exception(
-                    'currency_type not found, given:' .
+                    'badly formatted currency, given:' .
                     $currency .
-                    ' available currency_types set in csv config:' .
+                    ' available currency_format set in csv config:' .
                     $this->csvConfig['available_currency_types'] .
                     PHP_EOL
                 );
             }
+        } else {
+            throw new \Exception(
+                'currency_type not found, given:' .
+                $currency .
+                ' available currency_types set in csv config:' .
+                $this->csvConfig['available_currency_types'] .
+                PHP_EOL
+            );
+        }
     }
 }

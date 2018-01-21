@@ -29,9 +29,9 @@ class CashOutTaxReductionTracker
         int $year,
         int $week
     ) {
-      $this->config = $config->getCashOutConfig();
-      $this->year = $year;
-      $this->week = $week;
+        $this->config = $config->getCashOutConfig();
+        $this->year = $year;
+        $this->week = $week;
 
         $this->untaxedTransCount = $this->config['natural']['untaxed_transaction_count'];
         foreach ($this->config['currency_types'] as $currency) {
@@ -73,7 +73,7 @@ class CashOutTaxReductionTracker
     {
         if ($this->getUntaxedAmountByCurrency($trans->getCurrency()) > $trans->getAmount()) {
             return true;
-        }  else {
+        } else {
             return false;
         }
     }
@@ -89,9 +89,9 @@ class CashOutTaxReductionTracker
 
     public function zeroUntaxedAmounts()
     {
-       foreach ($this->untaxedAmount as &$amount) {
-           $amount = 0;
-       }
+        foreach ($this->untaxedAmount as &$amount) {
+            $amount = 0;
+        }
     }
 
     private function reduceUntaxableTransCount()

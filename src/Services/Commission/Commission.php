@@ -20,7 +20,7 @@ class Commission
     public function __construct(
         CashIn $cashInService,
         CashOut $cashOutService
-    ){
+    ) {
         $this->cashInService = $cashInService;
         $this->cashOutService = $cashOutService;
     }
@@ -45,9 +45,11 @@ class Commission
 
         return array_merge($cashIns, $cashOuts);
     }
+
     /**
      * @param Transaction[] $transactions
-     * @return array
+     * @return mixed
+     * @throws \Exception
      */
     private function cashInsCommissions($transactions)
     {

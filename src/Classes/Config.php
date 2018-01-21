@@ -1,7 +1,8 @@
 <?php
 namespace Paysera\Classes;
 
-class Config {
+class Config
+{
 
     private $eurUsdRate = 1 / 1.1497;
     private $eurJpyRate = 1 / 129.53;

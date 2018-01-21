@@ -38,8 +38,8 @@ class UserFactoryTest extends TestCase
             100,
             'EUR'
         );
-
     }
+
     public function testBuildFromData()
     {
         $this->assertEquals($this->user, $this->service->buildFromData([

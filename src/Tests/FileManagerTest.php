@@ -23,7 +23,9 @@ class FileManagerTest extends TestCase
     {
         $this->config = new Config();
 
-        $this->csvValidatorServiceMock = $this->getMockBuilder(CsvValidator::class)->disableOriginalConstructor()->getMock();
+        $this->csvValidatorServiceMock = $this->getMockBuilder(CsvValidator::class)
+            ->disableOriginalConstructor()
+            ->getMock();
 
 
         $this->service = new FileManager(
@@ -41,5 +43,4 @@ class FileManagerTest extends TestCase
     {
         $this->service->readFile('xxx.xxxx');
     }
-
 }
