@@ -1,17 +1,12 @@
 <?php
 namespace Paysera\Services\Commission;
 
-use AppConfig\Config;
 use Paysera\Classes\Transaction;
-use Paysera\Classes\User;
 use Paysera\Services\Transaction\CashIn;
 use Paysera\Services\Transaction\CashOut;
 
 class Commission
 {
-    private $cashInConfig;
-    private $cashOutConfig;
-    private $config;
     /**
      * @var CashIn
      */
@@ -22,23 +17,21 @@ class Commission
     private $cashOutService;
 
     public function __construct(
-        Config $config,
         CashIn $cashInService,
         CashOut $cashOutService
     ){
-        $this->cashInConfig = $config->getCashInConfig();
-        $this->cashOutConfig = $config->getCashOutConfig();
-        $this->config = $config;
         $this->cashInService = $cashInService;
         $this->cashOutService = $cashOutService;
     }
 
     /**
-     * @param User $user
+     * @param $user
      * @return array
+     * @throws \Exception
      */
     public function processUserTransactions($user)
     {
+
         $cashIns = $user->getTransactionsByType('cash_in');
         if (!empty($cashIns)) {
             $cashIns = $this->cashInsCommissions($cashIns);
@@ -55,7 +48,7 @@ class Commission
      * @param Transaction[] $transactions
      * @return array
      */
-    public function cashInsCommissions($transactions)
+    private function cashInsCommissions($transactions)
     {
         foreach ($transactions as $transaction) {
             $transaction->setCommissionFee($this->cashInService->commissionFee($transaction));
@@ -64,11 +57,12 @@ class Commission
     }
 
     /**
-     * @param array $cashOuts
-     * @param string $userType
-     * @return mixed
+     * @param $cashOuts
+     * @param $userType
+     * @return mixed|null
+     * @throws \Exception
      */
-    public function cashOutsCommissions($cashOuts, $userType)
+    private function cashOutsCommissions($cashOuts, $userType)
     {
         return $this->cashOutService->cashOutsCommissions($cashOuts, $userType);
     }
