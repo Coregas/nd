@@ -88,10 +88,10 @@ class CsvValidator
             return $userType;
         } else {
             throw new \Exception(
-                'user_type not found, given:' .
+                'user_type not found, given: ' .
                 $userType .
-                ' available user_types set in csv config:' .
-                $this->csvConfig['user_types'] .
+                ' available user_types set in csv config: ' .
+                $this->csvConfig['user_types_example'] .
                 PHP_EOL
             );
         }
@@ -111,7 +111,7 @@ class CsvValidator
                 'operation_type not found, given:' .
                 $operationType .
                 ' available operation_type set in csv config:' .
-                $this->csvConfig['transaction_types'] .
+                $this->csvConfig['transaction_types_example'] .
                 PHP_EOL
             );
         }
@@ -144,7 +144,9 @@ class CsvValidator
      */
     public function validateCurrency(string $currency) : string
     {
-            if (preg_match($this->csvConfig['currency_format'], $currency)) {
+            if (strlen($currency) == $this->csvConfig['currency_format_length'] &&
+                preg_match($this->csvConfig['currency_format'], $currency)) {
+
                 if (in_array($currency, $this->csvConfig['currency_types'])) {
                     return $currency;
                 } else {
@@ -161,7 +163,7 @@ class CsvValidator
                     'currency_type not found, given:' .
                     $currency .
                     ' available currency_types set in csv config:' .
-                    $this->csvConfig['currency_types'] .
+                    $this->csvConfig['available_currency_types'] .
                     PHP_EOL
                 );
             }

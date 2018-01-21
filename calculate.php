@@ -25,19 +25,25 @@ function init($fileName, $container)
     $userFactory = $container->get('user_factory_service');
     $commissionService = $container->get('commission_service');
 
-    $fileData = $fileManager->readFile($fileName);
-    $allTransactions = [];
+    try {
+        $fileData = $fileManager->readFile($fileName);
+        $allTransactions = [];
 
 
-    foreach ($fileData as $row) {
-        $allTransactions[] = $transactionFactory->buildFromData($row);
+        foreach ($fileData as $row) {
+            $allTransactions[] = $transactionFactory->buildFromData($row);
+        }
+        $users = $userFactory->buildFromTransactions($allTransactions);
+
+        foreach ($users as $user) {
+            $user->setTransactions($commissionService->processUserTransactions($user));
+        }
+        getCommissionData($users);
+
+    } catch (\Exception $e) {
+        fwrite(STDOUT, $e->getMessage());
+        die();
     }
-    $users = $userFactory->buildFromTransactions($allTransactions);
-
-    foreach ($users as $user) {
-        $user->setTransactions($commissionService->processUserTransactions($user));
-    }
-    getCommissionData($users);
 }
 /**
  * @param User[] $users
