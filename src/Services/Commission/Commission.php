@@ -2,6 +2,7 @@
 namespace Paysera\Services\Commission;
 
 use Paysera\Classes\Transaction;
+use Paysera\Classes\User;
 use Paysera\Services\Transaction\CashIn;
 use Paysera\Services\Transaction\CashOut;
 
@@ -25,7 +26,7 @@ class Commission
     }
 
     /**
-     * @param $user
+     * @param User $user
      * @return array
      * @throws \Exception
      */

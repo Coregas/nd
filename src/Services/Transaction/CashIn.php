@@ -16,6 +16,11 @@ class CashIn
         $this->config = $config->getCashInConfig();
     }
 
+    /**
+     * @param Transaction $trans
+     * @return float
+     * @throws \Exception
+     */
     public function commissionFee(Transaction $trans)
     {
         $commissionFee = $trans->getAmount() / 100 * $this->config['commission_fee_percent'];

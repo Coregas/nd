@@ -70,5 +70,3 @@ class User {
         $this->transactions = $transactions;
     }
 }
-
-?>

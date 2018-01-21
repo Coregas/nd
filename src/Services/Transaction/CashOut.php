@@ -122,7 +122,7 @@ class CashOut
     {
         $commissionFee = $transAmount / 100 * $this->config['natural']['commission_fee_percent'];
 
-        return round($commissionFee, 2, PHP_ROUND_HALF_UP);;
+        return round($commissionFee, 2, PHP_ROUND_HALF_UP);
     }
     /**
      * @param Transaction $firstTrans
@@ -161,7 +161,7 @@ class CashOut
     }
 
     /**
-     * @param $cashOuts
+     * @param Transaction[] $cashOuts
      * @return mixed
      * @throws \Exception
      */
@@ -175,7 +175,7 @@ class CashOut
 
 
     /**
-     * @param $transaction
+     * @param Transaction $transaction
      * @return float
      * @throws \Exception
      */
