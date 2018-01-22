@@ -64,6 +64,9 @@ function getCommissionData($users) {
     printData($commissionData);
 }
 
+/**
+ * @param array $commissionData
+ */
 function printData($commissionData) {
     foreach ($commissionData as $fee) {
         fwrite(STDOUT, number_format((float)$fee, 2, '.', '') . PHP_EOL);

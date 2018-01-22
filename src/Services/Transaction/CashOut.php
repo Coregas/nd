@@ -53,11 +53,7 @@ class CashOut
      */
     private function cashOutNaturalUser($cashOuts)
     {
-        if (count($cashOuts) > 1) {
-            return $this->processNaturalUserCashOutTransactions($cashOuts);
-        } else {
-            return $this->processSingleNaturalUserCashOutTransaction($cashOuts);
-        }
+        return $this->processNaturalUserCashOutTransactions($cashOuts);
     }
 
     /**
@@ -145,27 +141,6 @@ class CashOut
     }
 
     /**
-     * @param Transaction[] $transactions
-     * @return mixed
-     * @throws \Exception
-     */
-    private function processSingleNaturalUserCashOutTransaction($transactions)
-    {
-        $commissionFee = $transactions[0]->getAmount() / 100 * $this->config['natural']['commission_fee_percent'];
-        $maxTaxFreeCashOut = $this->getMaxCashOutNaturalFreeFee($transactions[0]->getCurrency());
-
-        if ($commissionFee > $maxTaxFreeCashOut) {
-            $commissionFee -= $maxTaxFreeCashOut;
-            $commissionFee = round($commissionFee, 2, PHP_ROUND_HALF_UP);
-            $transactions[0]->setCommissionFee($commissionFee);
-        } else {
-            $transactions[0]->setCommissionFee(0);
-        }
-
-        return $transactions;
-    }
-
-    /**
      * @param Transaction[] $cashOuts
      * @return mixed
      * @throws \Exception
@@ -191,29 +166,6 @@ class CashOut
         $commissionFee = $commissionFee < $minCommissionFee ? $minCommissionFee : $commissionFee;
 
         return round($commissionFee, 2, PHP_ROUND_HALF_UP);
-    }
-
-    /**
-     * @param $currency
-     * @return mixed
-     * @throws \Exception
-     */
-    private function getMaxCashOutNaturalFreeFee($currency)
-    {
-        switch ($currency) {
-            case 'EUR':
-                return $this->config['natural']['week_max_untaxed_amount']['EUR'];
-                break;
-            case 'USD':
-                return $this->config['natural']['week_max_untaxed_amount']['USD'];
-                break;
-            case 'JPY':
-                return $this->config['natural']['week_max_untaxed_amount']['JPY'];
-                break;
-            default:
-                throw new \Exception('Unhandled cash_out legal user currency ' . $currency);
-                break;
-        }
     }
 
     /**

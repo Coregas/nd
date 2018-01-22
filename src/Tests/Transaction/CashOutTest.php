@@ -212,17 +212,7 @@ class CashOutTest extends TestCase
     {
         $this->service->cashOutsCommissions(
             [$this->naturalTransactionJpy],
-            'aaaaa'
-        );
-    }
-    /**
-     * @expectedException \Exception
-     */
-    public function testUndefinedCurrencyNatural()
-    {
-        $this->service->cashOutsCommissions(
-            [$this->transactionFalseCurrency],
-            'natural'
+            'aaa'
         );
     }
     /**
