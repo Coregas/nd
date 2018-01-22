@@ -1,12 +1,10 @@
 {
   "autoload": {
     "psr-4": {
-      "Paysera\\": "src/",
-      "AppConfig\\": "config/"
+      "Paysera\\": "src/"
     }
   },
   "require": {
-    "symfony/var-dumper": "^3.4",
     "league/csv": "^9.1",
     "phpunit/phpunit": "^6.5",
     "symfony/dependency-injection": "^3.4",

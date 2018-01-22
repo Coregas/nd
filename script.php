@@ -69,6 +69,3 @@ function printData($commissionData) {
         fwrite(STDOUT, number_format((float)$fee, 2, '.', '') . PHP_EOL);
     }
 }
-
-?>
-
